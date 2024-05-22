@@ -1343,10 +1343,15 @@ series_length_calc(Movie, Acc, Length) :-
     series_length_calc(Sequel, NewAcc, Length).
 series_length_calc(_, Length, Length).
 
+% Mood to genre mapping
 mood_genres(happy, [comedy, adventure, thriller, musical, drama, science_fiction, animation, fantasy]).
 mood_genres(sad, [comedy, drama, romance, fantasy, animation]).
 mood_genres(bored, [science_fiction, action, animation, adventure, fantasy, mystery]).
 mood_genres(normal, [thriller, action, comedy, romance, animation, biography]).
+mood_genres(adventurous, [adventure, thriller, mystery]).
+mood_genres(excited, [action, science_fiction, mystery, adventure]).
+mood_genres(stressed, [animation, comedy, family]).
+
 % Gender to genre mapping
 gender_genres(female, [drama, comedy, romance, science_fiction, adventure]).
 gender_genres(male, [action, thriller, crime, comedy, adventure, science_fiction]).
@@ -1400,7 +1405,7 @@ personalInfo_based_Recommendation :-
     read(Age),
     writeln('Enter Your gender :'),
 	read(Gender),
-	writeln('What is your mood right now (happy - sad - bored - normal) ?'),
+	writeln('What is your mood right now (happy - sad - bored - normal - adventurous - excited - stressed) ?'),
     read(Mood),
     writeln('What is the minimum Movie Rating you normally watch ?'),
     read(Rating),
@@ -1438,7 +1443,6 @@ has_actor(Actor, Film) :-
 has_year(Year, Film) :-
     year(Film, Year).
 
-
 before_2000(Film) :-
     year(Film, Year),
     Year < 2000.
@@ -1453,7 +1457,6 @@ filter_by_age(Age, Films, FilteredFilms) :-
         include(after_2000, Films, FilteredFilms)  % Films from 2000 onwards for age < 50
     ;   include(before_2000, Films, FilteredFilms)  % Films before 2000 for age >= 50
     ).
-
 
 has_genre(Genres, Film) :-
     genre(Film, Genre),
@@ -1471,7 +1474,7 @@ query_preferences(UnFilteredList) :-
     writeln('2. Director'),
     writeln('3. Actor'),
     writeln('4. Year'),
-    writeln('5. Rating'),
+    writeln('5. Minimum Rating'),
     writeln('6. Done'),
     read(Choice),
     process_choice(Choice, UnFilteredList).
@@ -1512,23 +1515,6 @@ process_choice(6, UnFilteredList) :-
 process_choice(_, UnFilteredList) :-
     writeln('Invalid choice. Please try again.'),
     query_preferences(UnFilteredList).
-	
-
-/*
-gather_recommendations(Criteria, FilmList) :-
-    findall(Film, (film(Film), satisfies_criteria(Criteria, Film)), FilmList).
-
-satisfies_criteria([], _).
-satisfies_criteria([genre(Genre)|T], Film) :-
-    genre(Film, Genre),
-    satisfies_criteria(T, Film).
-satisfies_criteria([director(Director)|T], Film) :-
-    director(Film, Director),
-    satisfies_criteria(T, Film).
-satisfies_criteria([actor(Actor)|T], Film) :-
-    actor(Film, Actor),
-    satisfies_criteria(T, Film).
-*/
 
 display_recommendations([]) :-
     writeln('No films found matching the criteria.').
@@ -1574,13 +1560,20 @@ printList([H|L]):-
     (L = [] -> nl ; write(', ')),
     printList(L).% Start the recommendation system
 start :-
-    personalInfo_based_Recommendation.
+    recommendation_system.
 
 % happy -> comedy , adventure , thriller , musical
 % sad ->   comedy , drama   ,  romance 
 % bored -> science-fiction , action , animation
 % normal -> thriller , action , comedy , romance , animation 
+% adventurous -> adventure, thriller, mystery
+% excited -> action, science_fiction, mystery, adventure
+% stressed -> animation, comedy, family
 
 
 %female -> drama - comedy - romance - science_fiction - adventure 
 %male   -> action , thriller ,crime , comedy , adventure ,science_fiction 
+
+
+%test -> genre : comedy, adventure 6
+%test -> director frank_darabont  actor tim_robbins 
